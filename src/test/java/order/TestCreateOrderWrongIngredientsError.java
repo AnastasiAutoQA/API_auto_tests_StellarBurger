@@ -1,21 +1,19 @@
 package order;
+import base.BaseTestOrder;
 import io.qameta.allure.Description;
 import io.qameta.allure.junit4.DisplayName;
 import io.restassured.response.ValidatableResponse;
-import org.example.api_config.OrderApiConfig;
-import org.junit.Before;
 import org.junit.Test;
-import test_data_models.OrderAutoGenerator;
-import test_data_models.OrderRequest;
+import model.OrderAutoGenerator;
+import model.OrderRequest;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import static java.net.HttpURLConnection.HTTP_INTERNAL_ERROR;
 import static org.junit.Assert.*;
 
 @RunWith(Parameterized.class)
-public class TestCreateOrderWrongIngredientsError {
+public class TestCreateOrderWrongIngredientsError extends BaseTestOrder {
     private boolean isOrderCreated;
-    private OrderApiConfig orderCreate;
     private OrderRequest orderRequest;
     private int statusCode;
     private String[] ingredients;
@@ -31,13 +29,7 @@ public class TestCreateOrderWrongIngredientsError {
                 {OrderAutoGenerator.getOrderWithWrongIngredients(1), false},
                 {OrderAutoGenerator.getOrderWithWrongIngredients(3), false},
                 {OrderAutoGenerator.getOrderWithWrongIngredients(4), false}
-
         };
-    }
-
-    @Before
-    public void setUp() {
-        orderCreate = new OrderApiConfig();
     }
 
     @DisplayName("Создание заказа с неверным хэш id ингредиентов невозможна и проверка ответа")
@@ -46,7 +38,7 @@ public class TestCreateOrderWrongIngredientsError {
     public void shouldNotCreateOrderWithWrongIngredients(){
         orderRequest = OrderAutoGenerator.getBlankOrder(); // Создали заказ с пустым списком ингредиентов
         orderRequest.setIngredients(this.ingredients); // Передали рандомные ингредиенты
-        ValidatableResponse createResponse = orderCreate.createNewOrder(orderRequest);
+        ValidatableResponse createResponse = orderConfig.createNewOrder(orderRequest);
         statusCode = createResponse.extract().statusCode();
         assertEquals(HTTP_INTERNAL_ERROR, statusCode);
     }
